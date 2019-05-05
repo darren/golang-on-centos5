@@ -1,0 +1,51 @@
+diff --git a/src/cmd/cgo/out.go b/src/cmd/cgo/out.go
+index 0cf8b17..b834815 100644
+--- a/src/cmd/cgo/out.go
++++ b/src/cmd/cgo/out.go
+@@ -776,13 +776,6 @@ func (p *Package) writeExports(fgo2, fm, fgcc, fgcch io.Writer) {
+        fmt.Fprintf(fgcc, "#include <stdlib.h>\n")
+        fmt.Fprintf(fgcc, "#include \"_cgo_export.h\"\n\n")
+ 
+-       // We use packed structs, but they are always aligned.
+-       // The pragmas and address-of-packed-member are not recognized as warning groups in clang 3.4.1, so ignore unknown pragmas first.
+-       // remove as part of #27619 (all: drop support for FreeBSD 10).
+-       fmt.Fprintf(fgcc, "#pragma GCC diagnostic ignored \"-Wunknown-pragmas\"\n")
+-       fmt.Fprintf(fgcc, "#pragma GCC diagnostic ignored \"-Wpragmas\"\n")
+-       fmt.Fprintf(fgcc, "#pragma GCC diagnostic ignored \"-Waddress-of-packed-member\"\n")
+-
+        fmt.Fprintf(fgcc, "extern void crosscall2(void (*fn)(void *, int, __SIZE_TYPE__), void *, int, __SIZE_TYPE__);\n")
+        fmt.Fprintf(fgcc, "extern __SIZE_TYPE__ _cgo_wait_runtime_init_done();\n")
+        fmt.Fprintf(fgcc, "extern void _cgo_release_context(__SIZE_TYPE__);\n\n")
+@@ -1484,10 +1477,6 @@ extern char* _cgo_topofstack(void);
+ /* The pragmas and address-of-packed-member are not recognized as warning groups in clang 3.4.1, so ignore unknown pragmas first. */
+ /* remove as part of #27619 (all: drop support for FreeBSD 10). */
+ 
+-#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+-#pragma GCC diagnostic ignored "-Wpragmas"
+-#pragma GCC diagnostic ignored "-Waddress-of-packed-member"
+-
+ #include <errno.h>
+ #include <string.h>
+ `
+diff --git a/src/runtime/sys_linux_amd64.s b/src/runtime/sys_linux_amd64.s
+index b709f77..f6ae4b0 100644
+--- a/src/runtime/sys_linux_amd64.s
++++ b/src/runtime/sys_linux_amd64.s
+@@ -40,6 +40,7 @@
+ #define SYS_sched_getaffinity  204
+ #define SYS_epoll_create       213
+ #define SYS_exit_group         231
++#define SYS_epoll_wait      232
+ #define SYS_epoll_ctl          233
+ #define SYS_tgkill             234
+ #define SYS_openat             257
+@@ -669,8 +670,7 @@ TEXT runtime·epollwait(SB),NOSPLIT,$0
+        MOVQ    ev+8(FP), SI
+        MOVL    nev+16(FP), DX
+        MOVL    timeout+20(FP), R10
+-       MOVQ    $0, R8
+-       MOVL    $SYS_epoll_pwait, AX
++       MOVL    $SYS_epoll_wait, AX
+        SYSCALL
+        MOVL    AX, ret+24(FP)
+        RET
