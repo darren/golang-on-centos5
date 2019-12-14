@@ -3,7 +3,9 @@
 *WARNING: Go has never been supported on CentOS5, use on your own risk.*
 
 
-## Can not access github on centos5
+## Other problems using go on CentOS5
+
+### Can not access github on centos5
 
 ```
 error: error:1407742E:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert protocol version while accessing 
