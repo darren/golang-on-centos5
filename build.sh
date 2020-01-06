@@ -12,7 +12,7 @@ function FAIL() {
 }
 
 if [[ ! -r $SOURCE_TGZ ]]; then
-	wget https://dl.google.com/go/$SOURCE_TGZ
+    wget https://dl.google.com/go/$SOURCE_TGZ
 fi
 
 if [[ ! -r $SOURCE_TGZ  ]]; then
