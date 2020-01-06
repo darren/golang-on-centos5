@@ -8,7 +8,7 @@ SOURCE_TGZ=go${VERSION}.src.tar.gz
 
 function FAIL() {
     echo "$1"
-	exit 1
+    exit 1
 }
 
 if [[ ! -r $SOURCE_TGZ ]]; then
@@ -35,11 +35,11 @@ if [[ -r $SOURCE_DIR ]]; then
     docker cp $CONTAINER_ID:/go.tar.xz $ARTIFACT
     docker stop $CONTAINER_ID
 else 
-    echo "source not found: go${VERSION}"
+    FAIL "source not found: go${VERSION}"
 fi
 
 if [[ -r $ARTIFACT ]]; then
 	echo "Build output: $ARTIFACT"
 else 
-	echo "Build failed"
+	FAIL "Build failed"
 fi
