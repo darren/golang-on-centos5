@@ -2,7 +2,7 @@
 
 *WARNING: Go has never been supported on CentOS5, use on your own risk.*
 
-## Building usig docker
+## Building using docker
 
 Ensure that `wget patch docker` are installed on host then run `build.sh`
 
