@@ -21,6 +21,7 @@ docker build . -t $IMAGE_TAG
 docker run -d -t $IMAGE_TAG /bin/bash 
 CONTAINER_ID=$(docker ps -alq)
 docker cp $CONTAINER_ID:/$ARTIFACT .
+docker stop $CONTAINER_ID
 
 if [[ -r $ARTIFACT ]]; then
 	echo "Build output: $ARTIFACT"
