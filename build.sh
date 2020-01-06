@@ -3,26 +3,37 @@
 VERSION=1.13.4
 ARTIFACT=go${VERSION}-CentOS5.linux-amd64.tar.xz
 IMAGE_TAG=centos5-go${VERSION}
+SOURCE_DIR=go-src
+SOURCE_TGZ=go${VERSION}.src.tar.gz
 
-if [[ ! -r go${VERSION}.src.tar.gz ]]; then
-	wget https://dl.google.com/go/go${VERSION}.src.tar.gz
+function FAIL() {
+    echo "$1"
+	exit 1
+}
+
+if [[ ! -r $SOURCE_TGZ ]]; then
+	wget https://dl.google.com/go/$SOURCE_TGZ
 fi
 
-if [[ -r go${VERSION} ]]; then
-  echo "Clean files"
-  rm -rf go${VERSION}
+if [[ ! -r $SOURCE_TGZ  ]]; then
+    FAIL "$SOURCE_TGZ  not found"
 fi
 
-tar zxf go${VERSION}.src.tar.gz
-mv go go${VERSION}
-patch -p1 -d go${VERSION} < go${VERSION}-fix.diff
+if [[ -r $SOURCE_DIR ]]; then
+    echo "Clean files"
+    rm -rf $SOURCE_DIR
+fi
 
-if [[ -r go${VERSION} ]]; then
-  docker build . -t $IMAGE_TAG ||  (echo "build failed"; exit 1)
-  docker run -d -t $IMAGE_TAG /bin/bash 
-  CONTAINER_ID=$(docker ps -alq)
-  docker cp $CONTAINER_ID:/$ARTIFACT .
-  docker stop $CONTAINER_ID
+tar zxf $SOURCE_TGZ
+mv go $SOURCE_DIR 
+patch -p1 -d $SOURCE_DIR < go${VERSION}-fix.diff
+
+if [[ -r $SOURCE_DIR ]]; then
+    docker build . -t $IMAGE_TAG || FAIL "build failed"
+    docker run -d -t $IMAGE_TAG /bin/bash 
+    CONTAINER_ID=$(docker ps -alq)
+    docker cp $CONTAINER_ID:/go.tar.xz $ARTIFACT
+    docker stop $CONTAINER_ID
 else 
     echo "source not found: go${VERSION}"
 fi
