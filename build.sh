@@ -17,11 +17,15 @@ tar zxf go${VERSION}.src.tar.gz
 mv go go${VERSION}
 patch -p1 -d go${VERSION} < go${VERSION}-fix.diff
 
-docker build . -t $IMAGE_TAG
-docker run -d -t $IMAGE_TAG /bin/bash 
-CONTAINER_ID=$(docker ps -alq)
-docker cp $CONTAINER_ID:/$ARTIFACT .
-docker stop $CONTAINER_ID
+if [[ -r go${VERSION} ]]; then
+  docker build . -t $IMAGE_TAG ||  (echo "build failed"; exit 1)
+  docker run -d -t $IMAGE_TAG /bin/bash 
+  CONTAINER_ID=$(docker ps -alq)
+  docker cp $CONTAINER_ID:/$ARTIFACT .
+  docker stop $CONTAINER_ID
+else 
+    echo "source not found: go${VERSION}"
+fi
 
 if [[ -r $ARTIFACT ]]; then
 	echo "Build output: $ARTIFACT"
