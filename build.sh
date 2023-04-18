@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=1.17.3
+VERSION=1.17.13
 ARTIFACT=go${VERSION}-CentOS5.linux-amd64.tar.xz
 IMAGE_TAG=centos5-go${VERSION}
 SOURCE_DIR=go-src
