@@ -1,4 +1,4 @@
-FROM darrenhoo/centos5-go-bootstrap:latest
+FROM darrenhoo/centos5-go-bootstrap:1.17.13
 
 ADD go-src /usr/local/go
 RUN cd /usr/local/go/src/; ./make.bash
